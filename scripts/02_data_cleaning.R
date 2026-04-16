@@ -38,4 +38,27 @@ nhis_final <- nhis_clean %>%
 # Print new number of rows
 nrow(nhis_final)
 
+# Day 2 Task 2
+# Recoding EDUCP_A variable based on column in codebook
+nhis_final <- nhis_final %>%
+  mutate(
+    EDUCP_A = case_when(
+      EDUCP_A %in% 0:3 ~ "Less than high school",
+      EDUCP_A == 4 ~ "High school graduate",
+      EDUCP_A %in% 5:7 ~ "Some college education",
+      EDUCP_A %in% 8:10 ~ "College graduate or better"
+    ),
+    EDUCP_A = factor(EDUCP_A,
+                     levels = c(
+                       "Less than high school",
+                       "High school graduate",
+                       "Some college education",
+                       "College graduate or better"
+                     ))
+  )
+# Save cleaned dataset in data folder
+write_csv(nhis_final, "data/nhis_clean.csv")
+
+
+
 
