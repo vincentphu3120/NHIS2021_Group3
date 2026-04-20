@@ -1,0 +1,18 @@
+---
+title: "Final_Report_Rmd"
+output: word_document
+date: "2026-04-13"
+---
+
+## Introduction 
+The data is from the 2021 National Health Interview Survey which explores the relationships between demographics and health variables. We will be using variables such as age, weight, height, education level, race/ethnicity and more to identify any relationships between these variables. 
+## Methods
+Missing values from the dataset were identified and were removed based on the codebook to create a clean and ready dataset to use. The education level (EDUCP_A) category was recoded with meaningful level names. The quantitative variables used were age (AGEP_A), weight (WEIGHTLBTC_A), height (HEIGHTTC_A) and the qualitative variables used were sex (SEX_A), race/ethnicity (HISPALLP_A), education level (EDUCP_A), general health status (PHSTAT_A), and life satisfaction (LSATIS4R_A). Plot function and ggplot2 function were used to create statistical plots while univariate, bivariate, and multivariate visualizations were created to analyze the variables. 
+## Results
+Univariate analysis showed that age, height and weight all had a normal distribution but the qualitative variables had variations in education level, life satisfaction and health status. A bivariate anaylsis was done which showed the differences in age across sex and education level. Additionally, a clustered bar chart was created using ggplot2 which showed the relationship between general health and life satisfaction. This revealed that those who had overall better health had higher life satisfaction. A scatter plot was created between height and weight using both plot function and ggplot function which showed the correlation coefficient to be r = 0.50. This shows a moderate positive relationship indicating that taller individuals weight more. Lastly, a scatter plot matrix using the pairs.panels function was created to visualize age, weight, and height. 
+## Discussion
+The findings show that height is associated with height, however, it is not associated with age. The relationship between general health status and life satisfaction show the importance of how overall health is in an individual. In public health, health is a combination of many factors in one's life such as access to care, economic stability, the environment and more. Although the analysis and findings show a correlation, the dataset used had some missing values. The results are consistent with general expectations such as when older individuals are taller than younger ones.
+## Conclusion
+The analysis of the 2021 National Health Interview Survey showed key relationships among the demographic and health variables. Specifically the the variables between height and weight as well as the relationship between health status and life satisfaction. These findings show the importance of data analysis and how a variety of functions in R can be used to do so. Analytical approaches such as univariate, bivariate, and multivariate methods can be used to help undertsand population health data. This allows more clear interpretations and can help provide insight to public health research.
+
+
