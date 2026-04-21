@@ -1,15 +1,128 @@
 ---
 title: "Final_Report_Rmd"
-output: word_document
+output: 
+  word_document: default
+  pdf_document: default
+  html_document: default
 date: "2026-04-13"
 ---
+```{r setup, include=FALSE}
+library(tidyverse)
+library(psych)
+# Load cleaned dataset
+nhis_data <- read_csv("../data/nhis_clean.csv", show_col_types = FALSE)
+nhis_select <- nhis_data %>%
+  select(
+    AGEP_A,
+    WEIGHTLBTC_A,
+    HEIGHTTC_A,
+    SEX_A,
+    HISPALLP_A,
+    EDUCP_A,
+    PHSTAT_A,
+    LSATIS4R_A,
+  ) 
+
+# Identify all missing value codes from codebook
+nhis_clean <- nhis_select %>%
+mutate(
+  AGEP_A = ifelse(AGEP_A %in% 97:99, NA, AGEP_A),
+  WEIGHTLBTC_A = ifelse(WEIGHTLBTC_A %in% 996:999, NA, WEIGHTLBTC_A),
+  HEIGHTTC_A = ifelse(HEIGHTTC_A %in% 96:99, NA, HEIGHTTC_A),
+  SEX_A = ifelse(SEX_A %in% c(7,9), NA, SEX_A),
+  HISPALLP_A = ifelse(HISPALLP_A %in% c(97,98,99), NA, HISPALLP_A),
+  EDUCP_A = ifelse(EDUCP_A %in% c(97,98,99), NA, EDUCP_A),
+  PHSTAT_A = ifelse(PHSTAT_A %in% c(7,8,9), NA, PHSTAT_A),
+  LSATIS4R_A = ifelse(LSATIS4R_A %in% c(7,8,9), NA, LSATIS4R_A)
+) 
+
+# Remove all rows with missing values
+nhis_final <- nhis_clean %>%
+  drop_na()
+```
+
 
 ## Introduction 
 The data used in this analysis come from the 2021 National Health Interview Survey, which examines relationships between demographic characteristics and health outcomes. This report focuses on variables such as age, weight, height, education level, and race/ethnicity to identify patterns and relationships among these factors. Understanding these associations can provide insight into broader public health trends and factors that influence overall well-being.
+
 ## Methods
 Missing values in the dataset were identified and removed based on the codebook to ensure a clean dataset for analysis. The education level variable (EDUCP_A) was recoded into more meaningful categories. Quantitative variables analyzed included age (AGEP_A), weight (WEIGHTLBTC_A), and height (HEIGHTTC_A), while qualitative variables included sex (SEX_A), race/ethnicity (HISPALLP_A), education level (EDUCP_A), general health status (PHSTAT_A), and life satisfaction (LSATIS4R_A). Both base R plotting functions and the ggplot2 package were used to create visualizations. Univariate, bivariate, and multivariate analyses were conducted to explore distributions and relationships among variables.
+
 ## Results
-Univariate analysis indicated that age, height, and weight were approximately normally distributed, suggesting relatively symmetric distributions for these variables. In contrast, categorical variables such as education level, life satisfaction, and health status showed variation in frequency across categories. Bivariate analysis examined differences in age across sex and education levels, revealing noticeable variation between groups. A clustered bar chart demonstrated the relationship between general health status and life satisfaction, showing that individuals reporting better overall health also tended to report higher life satisfaction. A scatterplot of height versus weight showed a moderate positive correlation (r = 0.50), indicating that taller individuals tend to weigh more. This relationship was consistent across both base R and ggplot2 visualizations. Additionally, a scatterplot matrix created using the pairs.panels function illustrated relationships among age, height, and weight. The matrix confirmed a positive association between height and weight, while showing little to no strong relationship between age and the other variables.
+Univariate analysis indicated that age, height, and weight were approximately normally distributed. 
+```{r, echo=FALSE}
+hist(nhis_final$AGEP_A,
+     main ="Histogram of Age",
+     xlab = "AGE",
+     col = "lightblue")
+```
+This suggests relatively symmetric distributions for these variables.
+
+In contrast, categorical variables such as education level, life satisfaction, and health status showed variation in frequency across categories.
+```{r, echo=FALSE}
+ggplot(nhis_final, aes(x = EDUCP_A)) +
+  geom_bar(fill = "lightblue", color = "black") +
+  labs(title = "Barplot of Education Level",
+       x = "Education Level",
+       y = "Frequency")
+```
+The bar chart shows that the distribution between education levels varies across categories with college graduates having the most frequency.  
+
+Bivariate analysis examined differences in age across sex and education levels, revealing noticeable variation between groups. 
+```{r, echo=FALSE}
+ggplot(nhis_final,
+       aes(x = factor(SEX_A,
+                      levels = c(1,2),
+                      labels = c("Male", "Female")),
+                      y = AGEP_A))+
+         geom_boxplot(fill = 'lightblue') +
+         labs(title = "Age by Sex",
+              x = "Sex",
+              y = "Age")
+```
+The boxplot shows variation in age distribution between males and females.
+
+A clustered bar chart demonstrated the relationship between general health status and life satisfaction.
+```{r, echo=FALSE}
+ggplot(nhis_final,
+       aes(x = factor(PHSTAT_A,
+                      levels = c(1,2,3,4,5),
+                      labels = c("Excellent",
+                                 "Very good",
+                                 "Good",
+                                 "Fair",
+                                 "Poor")),
+           fill = factor(LSATIS4R_A,
+                         levels = c(1,2,3,4),
+                         labels = c("Very satisfied",
+                                    "Satisfied",
+                                    "Dissatisfied",
+                                    "Very Dissatisfied")))) +
+  geom_bar(position = "dodge") +
+  labs(title = "General Health vs Life Satisfaction",
+       x = "General Health",
+       y = "Count",
+       fill = "Life Satisfaction")
+```
+This shows that individuals reporting better overall health also tended to report higher life satisfaction. 
+
+A scatterplot of height versus weight showed a moderate positive correlation (r = 0.50). 
+```{r, echo=FALSE}
+ggplot(nhis_final, aes(x = HEIGHTTC_A, y = WEIGHTLBTC_A)) +
+  geom_point(color = "lightblue") +
+  labs(title = "Scatter Plot of Height vs Weight",
+       x = "Height",
+       y = "Weight")
+```
+
+This indicates that taller individuals tend to weigh more. This relationship was consistent across both base R and ggplot2 visualizations. 
+
+Additionally, a scatterplot matrix created using the pairs.panels function illustrated relationships among age, height, and weight. 
+```{r, echo=FALSE}
+pairs.panels(nhis_final[, c("AGEP_A", "WEIGHTLBTC_A", "HEIGHTTC_A")])
+```
+The matrix confirmed a positive association between height and weight, while showing little to no strong relationship between age and the other variables.
+
 ## Discussion
 The findings show that height is associated with weight; however, it is not strongly associated with age. The relationship between general health status and life satisfaction highlights the importance of overall health in an individual’s well-being. Individuals who reported better health also tended to report higher life satisfaction, suggesting a strong connection between physical health and quality of life. In public health, health is influenced by many factors such as access to care, economic stability, and environment, which may also contribute to these patterns. Although the analysis shows correlation, the dataset included some missing values, which may have affected the results. Additionally, because the data is observational, causation cannot be determined. Overall, the results are consistent with general expectations, particularly the positive relationship between height and weight, and provide useful insight into how demographic and health variables are related.
 ## Conclusion
